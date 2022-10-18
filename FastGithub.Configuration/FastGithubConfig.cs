@@ -26,6 +26,11 @@ namespace FastGithub.Configuration
         public IPEndPoint[] FallbackDns { get; set; }
 
         /// <summary>
+        /// 自定义的解析记录
+        /// </summary>
+        public CustomtAddressRecord[] CustomtAddressRecords { get; set; }
+
+        /// <summary>
         /// FastGithub配置
         /// </summary>
         /// <param name="options"></param>
@@ -38,7 +43,7 @@ namespace FastGithub.Configuration
             this.FallbackDns = opt.FallbackDns;
             this.domainConfigs = ConvertDomainConfigs(opt.DomainConfigs);
             this.domainConfigCache = new ConcurrentDictionary<string, DomainConfig?>();
-
+            this.CustomtAddressRecords = opt.CustomtAddressRecords;
             options.OnChange(opt => this.Update(opt));
         }
 

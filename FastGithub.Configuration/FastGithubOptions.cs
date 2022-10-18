@@ -23,5 +23,10 @@ namespace FastGithub.Configuration
         /// 代理的域名配置
         /// </summary>
         public Dictionary<string, DomainConfig> DomainConfigs { get; set; } = new();
+
+        /// <summary>
+        /// 自定义的解析记录
+        /// </summary>
+        public CustomtAddressRecord[] CustomtAddressRecords { get; set; } = new CustomtAddressRecord[] { };
     }
 }
