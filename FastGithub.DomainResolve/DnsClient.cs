@@ -10,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -229,7 +230,25 @@ namespace FastGithub.DomainResolve
                 ? (IRequestResolver)new TcpRequestResolver(dns)
                 : new UdpRequestResolver(dns, new TcpRequestResolver(dns), this.resolveTimeout);
 
-            var addressRecords = await GetAddressRecordsAsync(resolver, endPoint.Host, cancellationToken);
+            var customtAddressRecords = this.fastGithubConfig.CustomtAddressRecords;
+            var addressRecords = new List<IPAddressResourceRecord>();
+            bool hasCustom = false;
+            if (customtAddressRecords != null && customtAddressRecords.Length > 0)
+            {
+
+                foreach (var item in customtAddressRecords)
+                {
+                    if (endPoint.Host.Contains(item.Domain))
+                    {
+                        addressRecords.Add(new IPAddressResourceRecord(new Domain(endPoint.Host), IPAddress.Parse(item.IPAddress)));
+                        hasCustom = true;
+                    }
+                }
+            }
+            if (!hasCustom)
+            {
+                addressRecords = (List<IPAddressResourceRecord>)await GetAddressRecordsAsync(resolver, endPoint.Host, cancellationToken);
+            }
             var addresses = (IList<IPAddress>)addressRecords
                 .Where(item => IPAddress.IsLoopback(item.IPAddress) == false)
                 .Select(item => item.IPAddress)
